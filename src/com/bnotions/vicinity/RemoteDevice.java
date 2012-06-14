@@ -23,27 +23,25 @@ public class RemoteDevice extends DeviceAbsImpl {
 	
 	public void connect() throws UnknownHostException, IOException {
 		
-		if (ip_address != null) {
-			new Thread() {
-				public void run() {
-					try {
-						ServerSocket ss = new ServerSocket(port);
-						socket = ss.accept();
-						socket.setKeepAlive(true);
-						socket.setTcpNoDelay(true);
-						output = new DataOutputStream(socket.getOutputStream());
-						input = new DataInputStream(socket.getInputStream());
-						
-						monitorMessages();
-						
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+		new Thread() {
+			public void run() {
+				try {
+					ServerSocket ss = new ServerSocket(port);
+					socket = ss.accept();
+					socket.setKeepAlive(true);
+					socket.setTcpNoDelay(true);
+					output = new DataOutputStream(socket.getOutputStream());
+					input = new DataInputStream(socket.getInputStream());
+					
+					if (listener != null) listener.connected();
+					
+					monitorMessages();
+					
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			}.start();
-		} else {
-			throw new IllegalStateException("No IP Address provided");
-		}
+			}
+		}.start();
 		
 	}
 
