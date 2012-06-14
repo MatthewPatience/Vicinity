@@ -137,6 +137,11 @@ public abstract class DeviceAbsImpl implements Device {
 		
 	}
 	
+	public boolean isConnected() {
+		
+		return socket.isConnected();
+	}
+	
 	public String getIpAddress() {
 		return ip_address;
 	}
