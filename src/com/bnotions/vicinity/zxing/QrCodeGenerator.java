@@ -1,4 +1,4 @@
-package com.bnotions.vicinity.util;
+package com.bnotions.vicinity.zxing;
 
 import android.graphics.Bitmap;
 

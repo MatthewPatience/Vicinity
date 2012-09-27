@@ -1,4 +1,4 @@
-package com.bnotions.vicinity.util;
+package com.bnotions.vicinity.zxing;
 
 /**
  * <p>Encapsulates the result of a barcode scan invoked through {@link IntentIntegrator}.</p>
