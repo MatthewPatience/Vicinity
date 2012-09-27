@@ -15,11 +15,11 @@ Server Application Setup
 ------------------------
 
 1. Start a new project and open up your AndroidManifest.xml. Insert the following permissions:
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+> <uses-permission android:name="android.permission.INTERNET" />
+> <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 2. Create a new class in your root package called "MyApplication" that extends VicinityApplication. If you have anything specific for your application to do here, then do so, otherwise you can leave it as an empty class.
 3. In your AndroidManifest add:
-	android:name=".MyApplication 
+> android:name=".MyApplication 
 to your application tag.
 4. Create an Activity and extend ServerActivity. Implement all the methods that are required to compile the class, these include *connected()*, *disconnected()*, *messageReceived()*, and *connecting()*. In this activity you will have to display an ImageView for the next step. Where you choose to put it is up to you.
 5. On your ImageView from the last step call *ImageView.setImageBitmap(Vicinity.getIpQrCode())* in your activity's *onCreate()* method. You can resize this bitmap before applying it the image if you wish.
