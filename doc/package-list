@@ -1,2 +1,6 @@
 com.bnotions.vicinity
+com.bnotions.vicinity.device
+com.bnotions.vicinity.manager
+com.bnotions.vicinity.object
 com.bnotions.vicinity.util
+com.bnotions.vicinity.zxing
