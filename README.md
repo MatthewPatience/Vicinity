@@ -15,8 +15,8 @@ Server Application Setup
 ------------------------
 
 1. Start a new project and open up your AndroidManifest.xml. Insert the following permissions:
-<pre><code><![CDATA[<uses-permission android:name="android.permission.INTERNET"]]></code></pre>
-<pre><code><![CDATA[<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"]]></code></pre>
+<pre><code>android.permission.INTERNET</code></pre>
+<pre><code>android.permission.ACCESS_NETWORK_STATE</code></pre>
 2. Create a new class in your root package called "MyApplication" that extends VicinityApplication. If you have anything specific for your application to do here, then do so, otherwise you can leave it as an empty class.
 3. In your AndroidManifest add:
 <pre><code>android:name=".MyApplication"</code></pre>
