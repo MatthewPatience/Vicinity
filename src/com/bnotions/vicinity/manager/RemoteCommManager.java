@@ -39,7 +39,6 @@ public class RemoteCommManager implements DeviceListener {
 	
 	private VicinityScanResult scan_result;
 	private int current_port_pos = 0;
-	private boolean first_connection = true;
 	
 	public RemoteCommManager() {
 		
@@ -127,7 +126,6 @@ public class RemoteCommManager implements DeviceListener {
 		
 		if (Constants.DEBUG) Log.d("Vicinity", "REMOTEMANAGER - CONNECTED - " + device.getPort());
 		
-		first_connection = false;
 		int num_listeners = list_listeners.size();
 		for (int i = 0; i < num_listeners; i++) {
 			DeviceListener listener = list_listeners.get(i);
@@ -148,7 +146,7 @@ public class RemoteCommManager implements DeviceListener {
 
 		//Attempt to reconnect
 		try {
-			if (first_connection && current_port_pos < scan_result.getPorts().length) {
+			if (current_port_pos < scan_result.getPorts().length) {
 				if (Constants.DEBUG) Log.d("Vicinity", "REMOTEMANAGER - RECONNECTING...");
 				current_port_pos++;
 				connect(scan_result);
