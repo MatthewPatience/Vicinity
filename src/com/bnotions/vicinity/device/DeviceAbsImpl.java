@@ -116,16 +116,18 @@ public abstract class DeviceAbsImpl implements Device {
 		if (output != null) {
 			new Thread() {
 				public void run() {
-					try {
-						if (output != null) {
-							output.writeUTF(data + Constants.EOM_MARKER);
-						} else {
-							monitor = false;
-							disconnect();
-							if (listener != null) listener.disconnected(DeviceAbsImpl.this);
+					if (output != null) {
+						try {
+							String message = data + Constants.EOM_MARKER;
+							output.writeUTF(message);
+							Log.d("Vicinity", "SENT MESSAGE = " + message);
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
+					} else {
+						monitor = false;
+						disconnect();
+						if (listener != null) listener.disconnected(DeviceAbsImpl.this);
 					}
 				}
 			}.start();
@@ -146,28 +148,21 @@ public abstract class DeviceAbsImpl implements Device {
 				
 				while(monitor) {
 					try {
-						if (socket.isConnected()) {
-							String msg = input.readUTF();
-							if (msg == null || msg.equalsIgnoreCase("")) {
-								continue;
+						String msg = input.readUTF();
+						if (msg == null || msg.equalsIgnoreCase("")) {
+							continue;
+						}
+						buffer.append(msg);
+						String buffer_string = buffer.toString();
+						if (buffer_string.contains(Constants.EOM_MARKER)) {
+							int msg_end = buffer_string.indexOf(Constants.EOM_MARKER);
+							String message = buffer_string.substring(0, msg_end);
+							if (message.equalsIgnoreCase(Constants.PING_REQUEST)) { 
+								receivePing();
+							} else { 
+								if (listener != null) listener.messageReceived(DeviceAbsImpl.this, message);
 							}
-							buffer.append(msg);
-							String buffer_string = buffer.toString();
-							if (buffer_string.contains(Constants.EOM_MARKER)) {
-								int msg_end = buffer_string.indexOf(Constants.EOM_MARKER);
-								String message = buffer_string.substring(0, msg_end);
-								if (message.equalsIgnoreCase(Constants.PING_REQUEST)) { 
-									receivePing();
-								} else { 
-									if (listener != null) listener.messageReceived(DeviceAbsImpl.this, message);
-								}
-								buffer.delete(0, msg_end + Constants.EOM_MARKER.length());
-							}
-						} else {
-							monitor = false;
-							disconnect();
-							if (listener != null) listener.disconnected(DeviceAbsImpl.this);
-							break;
+							buffer.delete(0, msg_end + Constants.EOM_MARKER.length());
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -221,6 +216,7 @@ public abstract class DeviceAbsImpl implements Device {
 			
 			Log.d("Vicinity", "AUTO-DISCONNECTING - NO PING");
 			connected = false;
+			monitor = false;
 			if (listener != null) {
 				listener.disconnected(DeviceAbsImpl.this);
 			}

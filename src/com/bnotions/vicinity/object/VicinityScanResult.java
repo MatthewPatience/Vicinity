@@ -23,7 +23,6 @@ package com.bnotions.vicinity.object;
 
 import android.content.Intent;
 
-import com.bnotions.vicinity.util.Constants;
 import com.bnotions.vicinity.zxing.IntentIntegrator;
 import com.bnotions.vicinity.zxing.IntentResult;
 
@@ -38,15 +37,8 @@ public class VicinityScanResult {
 		
 		IntentResult scan_result = IntentIntegrator.parseActivityResult(request_code, result_code, intent);
 		String contents = scan_result.getContents();
-		//Parse array of form "ip_address|port|port|port|port|port|port|port|port|"
-		//Example: "192.168.0.1|2401|2402|2403|2404|2505|2506|2507|2508"
-		String[] arr_data = contents.split(Constants.DELIMITER);
 		
-		ip_address = arr_data[0];
-		ports = new int[arr_data.length - 1];
-		for (int i = 1; i < arr_data.length; i++) {
-			ports[i-1] = Integer.parseInt(arr_data[i]);
-		}
+		ip_address = contents;
 		
 	}
 	

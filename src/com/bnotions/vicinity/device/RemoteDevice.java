@@ -24,9 +24,14 @@ package com.bnotions.vicinity.device;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
+
+import android.os.Looper;
+import android.util.Log;
+
+import com.bnotions.vicinity.util.Constants;
 
 
 /**
@@ -38,37 +43,66 @@ import java.net.UnknownHostException;
  */
 public class RemoteDevice extends DeviceAbsImpl {
 	
+	private boolean listening = false;
+	
 	public RemoteDevice() {
 		super();
 		
 		
 	}
 	
+	public RemoteDevice(Socket socket) {
+		super();
+		
+		try {
+			this.socket = socket;
+			this.input = new DataInputStream(socket.getInputStream());
+			this.output = new DataOutputStream(socket.getOutputStream());
+			this.ip_address = socket.getInetAddress().getHostAddress();
+			this.port = RemoteDevice.DEFAULT_PORT;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public void connect() throws UnknownHostException, IOException {
+		
+		listening = true;
 		
 		new Thread() {
 			public void run() {
-				try {
-					ServerSocket ss = new ServerSocket();
-					ss.setReuseAddress(true);
-					ss.bind(new InetSocketAddress(port));
-					socket = ss.accept();
-					socket.setKeepAlive(true);
-					socket.setTcpNoDelay(true);
-					output = new DataOutputStream(socket.getOutputStream());
-					input = new DataInputStream(socket.getInputStream());
-					
-					if (listener != null) listener.connected(RemoteDevice.this);
-					
-					monitorMessages();
-					startHeartBeatPing();
-					
-				} catch (IOException e) {
-					e.printStackTrace();
+				Looper.prepare();
+				while (listening) {
+					try {
+						ServerSocket ss = new ServerSocket(port);
+						socket = ss.accept();
+						socket.setKeepAlive(true);
+						socket.setTcpNoDelay(true);
+						
+						if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - NEW DEVICE CONNECTED - ADDRESS: " + socket.getInetAddress().getHostAddress());
+						RemoteDevice new_device = new RemoteDevice(socket);
+						
+						if (listener != null) listener.connected(new_device);
+						
+						new_device.monitorMessages();
+						new_device.startHeartBeatPing();
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}.start();
 		
+	}
+
+	public boolean isListening() {
+		return listening;
+	}
+
+	public void setListening(boolean listening) {
+		this.listening = listening;
 	}
 
 }

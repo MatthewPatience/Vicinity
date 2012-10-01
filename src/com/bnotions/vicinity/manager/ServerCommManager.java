@@ -29,23 +29,19 @@ import com.bnotions.vicinity.device.Device;
 import com.bnotions.vicinity.device.DeviceAbsImpl;
 import com.bnotions.vicinity.device.DeviceListener;
 import com.bnotions.vicinity.device.RemoteDevice;
-import com.bnotions.vicinity.object.DedicatedPorts;
 import com.bnotions.vicinity.util.Constants;
 
 public class ServerCommManager implements DeviceListener {
 	
-	private int[] ports;
 	private ArrayList<RemoteDevice> list_connected;
-	private ArrayList<RemoteDevice> list_listening;
+	private RemoteDevice port_device;
 	private int current_id = 1;
-	private boolean is_listening = false;
 	
 	private ArrayList<DeviceListener> list_listeners;
 	
 	public ServerCommManager() {
 		
 		list_connected = new ArrayList<RemoteDevice>();
-		list_listening = new ArrayList<RemoteDevice>();
 		
 		list_listeners = new ArrayList<DeviceListener>();
 		
@@ -69,22 +65,15 @@ public class ServerCommManager implements DeviceListener {
 	 */
 	public void startListening() throws Exception {
 		
-		is_listening = true;
-		ports = DedicatedPorts.getPorts();
-		if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - LISTENING ON PORTS " + ports[0] + " TO " + ports[ports.length-1]);
+		if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - STARTED LISTENING...");
 		
-		list_listening.clear();
-		
-		for (int i = 0; i < ports.length; i++) {
-			RemoteDevice device = new RemoteDevice();
-			device.setPort(ports[i]);
-			device.setDeviceListener(this);
-			try {
-				device.connect();
-				list_listening.add(device);
-			} catch (Exception e) {
-				throw new Exception("Error occured while attempting to listen on port " + ports[i]);
-			}
+		port_device = new RemoteDevice();
+		port_device.setPort(RemoteDevice.DEFAULT_PORT);
+		port_device.setDeviceListener(this);
+		try {
+			port_device.connect();
+		} catch (Exception e) {
+			throw new Exception("Error occured while attempting to listen on port " + RemoteDevice.DEFAULT_PORT);
 		}
 		
 	}
@@ -96,15 +85,18 @@ public class ServerCommManager implements DeviceListener {
 		
 		if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - STOP LISTENING REQUESTED");
 		
-		is_listening = false;
-		int num_listening = list_listening.size();
-		for (int i = 0; i < num_listening; i++) {
-			RemoteDevice device = list_listening.get(i);
-			device.disconnect();
+		port_device.setListening(false);
+		port_device.disconnect();
+		
+	}
+	
+	public boolean isListening() {
+		
+		if (port_device == null) {
+			return false;
 		}
 		
-		list_listening.clear();
-		
+		return port_device.isListening();
 	}
 	
 	/**
@@ -114,10 +106,8 @@ public class ServerCommManager implements DeviceListener {
 		
 		if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - DISCONNECT ALL DEVICES REQUESTED");
 		
-		int num_connected = list_connected.size();
-		for (int i = 0; i < num_connected; i++) {
-			list_connected.get(i).disconnect();
-		}
+		port_device.disconnect();
+		port_device = null;
 		
 	}
 	
@@ -189,7 +179,6 @@ public class ServerCommManager implements DeviceListener {
 		
 		device.setId(current_id);
 		list_connected.add((RemoteDevice) device);
-		list_listening.remove((RemoteDevice) device);
 		current_id++;
 		
 		int num_listeners = list_listeners.size();
@@ -209,18 +198,6 @@ public class ServerCommManager implements DeviceListener {
 			DeviceListener listener = list_listeners.get(i);
 			listener.disconnected(device);
 		}
-		
-		if (is_listening) {
-			device.disconnect();
-			RemoteDevice new_device = (RemoteDevice) device;
-			try {
-				new_device.connect();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - LISTENING PORTS COUNT " + list_listening.size());
 		
 	}
 

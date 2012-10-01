@@ -52,15 +52,10 @@ public class ServerDevice extends DeviceAbsImpl {
 						socket = new Socket(ip_address, port);
 						socket.setKeepAlive(true);
 						socket.setTcpNoDelay(true);
-						socket.setReuseAddress(true);
-						output = new DataOutputStream(socket.getOutputStream());
 						input = new DataInputStream(socket.getInputStream());
+						output = new DataOutputStream(socket.getOutputStream());
 						
-						if (socket.isConnected()) {
-							if (listener != null) listener.connected(ServerDevice.this);
-						} else {
-							if (listener != null) listener.disconnected(ServerDevice.this);
-						}
+						if (listener != null) listener.connected(ServerDevice.this);
 						
 						monitorMessages();
 						startHeartBeatPing();

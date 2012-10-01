@@ -27,6 +27,7 @@ import android.util.Log;
 
 import com.bnotions.vicinity.device.DeviceAbsImpl;
 import com.bnotions.vicinity.device.DeviceListener;
+import com.bnotions.vicinity.device.RemoteDevice;
 import com.bnotions.vicinity.device.ServerDevice;
 import com.bnotions.vicinity.object.VicinityScanResult;
 import com.bnotions.vicinity.util.Constants;
@@ -38,7 +39,6 @@ public class RemoteCommManager implements DeviceListener {
 	private ArrayList<DeviceListener> list_listeners;
 	
 	private VicinityScanResult scan_result;
-	private int current_port_pos = 0;
 	
 	public RemoteCommManager() {
 		
@@ -63,16 +63,15 @@ public class RemoteCommManager implements DeviceListener {
 		
 		this.scan_result = result;
 		
-		server.setIpAddress(result.getIpAddress());
+		server.setIpAddress(this.scan_result.getIpAddress());
 		
-		int[] ports = result.getPorts();
 		if (!server.isConnected()) {
-			if (Constants.DEBUG) Log.d("Vicinity", "REMOTEMANAGER - CONNECT ON PORT + " + ports[current_port_pos]);
-			server.setPort(ports[current_port_pos]);
+			if (Constants.DEBUG) Log.d("Vicinity", "REMOTEMANAGER - CONNECT ON PORT + " + RemoteDevice.DEFAULT_PORT);
+			server.setPort(RemoteDevice.DEFAULT_PORT);
 			try {
 				server.connect();
 			} catch (Exception e) {
-				throw new Exception("Error occured while attempting to connect on port " + ports[current_port_pos]);
+				throw new Exception("Error occured while attempting to connect on port " + RemoteDevice.DEFAULT_PORT);
 			}
 		}
 		
@@ -142,17 +141,6 @@ public class RemoteCommManager implements DeviceListener {
 		for (int i = 0; i < num_listeners; i++) {
 			DeviceListener listener = list_listeners.get(i);
 			listener.disconnected(device);
-		}
-
-		//Attempt to reconnect
-		try {
-			if (current_port_pos < scan_result.getPorts().length) {
-				if (Constants.DEBUG) Log.d("Vicinity", "REMOTEMANAGER - RECONNECTING...");
-				current_port_pos++;
-				connect(scan_result);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		
 	}
