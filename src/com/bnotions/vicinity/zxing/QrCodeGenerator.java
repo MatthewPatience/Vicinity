@@ -14,10 +14,13 @@ import com.google.zxing.qrcode.QRCodeWriter;
  */
 public class QrCodeGenerator {
 	
-	private static final int CODE_WIDTH = 300;
-	private static final int CODE_HEIGHT = 300;
+	private static int CODE_WIDTH = 300;
+	private static int CODE_HEIGHT = 300;
 	
-	public static Bitmap encode(String data) {
+	public static Bitmap encode(String data, int image_width, int image_height) {
+		
+		CODE_WIDTH = image_width;
+		CODE_HEIGHT = image_height;
 		
 		BitMatrix matrix;
 		com.google.zxing.Writer writer = new QRCodeWriter();

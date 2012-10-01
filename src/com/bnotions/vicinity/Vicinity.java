@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import android.app.Activity;
 import android.graphics.Bitmap;
 
-import com.bnotions.vicinity.util.Constants;
 import com.bnotions.vicinity.zxing.IntentIntegrator;
 import com.bnotions.vicinity.zxing.QrCodeGenerator;
 
@@ -58,18 +57,13 @@ public class Vicinity {
 	 * This will return a bitmap representation of a QR Code that contains
 	 * the local IP address.
 	 * 
-	 * @return A QR Code
+	 * @return A QR Code bitmap
 	 */
-	public static Bitmap getIpQrCode() {
+	public static Bitmap getIpQrCode(int width, int height) {
 		
-		StringBuilder contents = new StringBuilder(getLocalIpAddress());
-		int port = 2500;
-		for (int i = 0; i < 10; i++) {
-			contents.append(Constants.DELIMITER + String.valueOf(port));
-			port++;
-		}
+		String ip_address = getLocalIpAddress();
 		
-		return QrCodeGenerator.encode(contents.toString());
+		return QrCodeGenerator.encode(ip_address, width, height);
 	}
 	
 	private static String getLocalIpAddress() {
