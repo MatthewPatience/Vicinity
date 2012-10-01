@@ -42,7 +42,6 @@ public class ServerCommManager implements DeviceListener {
 	public ServerCommManager() {
 		
 		list_connected = new ArrayList<RemoteDevice>();
-		
 		list_listeners = new ArrayList<DeviceListener>();
 		
 	}
@@ -191,7 +190,7 @@ public class ServerCommManager implements DeviceListener {
 
 	public void disconnected(DeviceAbsImpl device) {
 		
-		if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - DEVICE DISCONNECTED FROM PORT " + device.getPort());
+		if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - DEVICE DISCONNECTED - " + device.getId());
 		
 		int num_listeners = list_listeners.size();
 		for (int i = 0; i < num_listeners; i++) {

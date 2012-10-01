@@ -120,7 +120,6 @@ public abstract class DeviceAbsImpl implements Device {
 						try {
 							String message = data + Constants.EOM_MARKER;
 							output.writeUTF(message);
-							Log.d("Vicinity", "SENT MESSAGE = " + message);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -187,7 +186,7 @@ public abstract class DeviceAbsImpl implements Device {
 				
 				while (monitor) {
 					
-					Log.d("Vicinity", "SENDING PING...");
+					if (Constants.DEBUG) Log.d("Vicinity", "SENDING PING...");
 					sendMessage(Constants.PING_REQUEST);
 					
 					try { Thread.sleep(PING_INTERVAL); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -203,7 +202,7 @@ public abstract class DeviceAbsImpl implements Device {
 	
 	private void receivePing() {
 		
-		Log.d("Vicinity", "PING RECEIVED");
+		if (Constants.DEBUG) Log.d("Vicinity", "PING RECEIVED");
 		
 		connected = true;
 		handler.removeCallbacks(ping_thread);
@@ -214,7 +213,7 @@ public abstract class DeviceAbsImpl implements Device {
 	private Runnable ping_thread = new Runnable() {
 		public void run() {
 			
-			Log.d("Vicinity", "AUTO-DISCONNECTING - NO PING");
+			if (Constants.DEBUG) Log.d("Vicinity", "AUTO-DISCONNECTING - NO PING");
 			connected = false;
 			monitor = false;
 			if (listener != null) {

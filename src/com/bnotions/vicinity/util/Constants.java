@@ -23,7 +23,7 @@ package com.bnotions.vicinity.util;
 
 public class Constants {
 	
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public static final String DELIMITER = "-";
 	public static final String EOM_MARKER = "~|~";

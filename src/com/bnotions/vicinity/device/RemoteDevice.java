@@ -51,7 +51,7 @@ public class RemoteDevice extends DeviceAbsImpl {
 		
 	}
 	
-	public RemoteDevice(Socket socket) {
+	public RemoteDevice(Socket socket, DeviceListener listener) {
 		super();
 		
 		try {
@@ -60,6 +60,7 @@ public class RemoteDevice extends DeviceAbsImpl {
 			this.output = new DataOutputStream(socket.getOutputStream());
 			this.ip_address = socket.getInetAddress().getHostAddress();
 			this.port = RemoteDevice.DEFAULT_PORT;
+			this.listener = listener;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,7 +82,7 @@ public class RemoteDevice extends DeviceAbsImpl {
 						socket.setTcpNoDelay(true);
 						
 						if (Constants.DEBUG) Log.d("Vicinity", "SERVERMANAGER - NEW DEVICE CONNECTED - ADDRESS: " + socket.getInetAddress().getHostAddress());
-						RemoteDevice new_device = new RemoteDevice(socket);
+						RemoteDevice new_device = new RemoteDevice(socket, listener);
 						
 						if (listener != null) listener.connected(new_device);
 						
